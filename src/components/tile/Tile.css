@@ -1,0 +1,20 @@
+#black{
+    display: grid;
+    place-content: center;
+    background-color: #769656;
+    width: 75px;
+    height: 75px;
+}
+
+#white{
+    display: grid;
+    place-content: center;
+    background-color: #fbf5de;
+    width: 75px;
+    height: 75px;
+}
+
+#p{
+    width: 70px;
+    height: 70px;
+}
