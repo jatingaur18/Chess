@@ -20,6 +20,8 @@ var activepiece = null;
 // var check =false;
 export default function Chessboard() {
     const [boardCurr, setBoardCurr] = useState(initialBoard);
+
+
     function ret_square(piece){
         var y = parseInt(piece[3]);
         var x = parseInt(piece[2]);
@@ -45,15 +47,9 @@ export default function Chessboard() {
         else if(activepiece!==null){
             var inital =ret_square(activepiece.classList.value);
             var final  =ret_square(clickedElement.classList.value);
-            var pp =possible_move(inital,final);
+            var pp =valid_moves(inital,final);
             if(pp[0] && ((turn && inital[2][1]==="w")||(!turn && inital[2][1]==="b"))){
                 update_board(inital, final).then(() => {
-                    console.log(boardCurr[4][1]);
-                    if (turn) {
-                      console.log(check_or_not('w') + 'check');
-                    } else {
-                      console.log(check_or_not('b') + 'black check');
-                    }
                     activepiece = null;
                   });
                   return;
@@ -62,27 +58,23 @@ export default function Chessboard() {
         }
     }
 
-    function check_or_not(color){
+    function check_or_not(color,board){
+        console.log(board[2][2])
         var x=null;
         var y=null;
-        console.log("k"+color);
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
-                if(boardCurr[i][j]===("k"+color)){
+                if(board[i][j]===("k"+color)){
                     x=i;
                     y=j;
                     break;
                 }
-            }if(x||y){console.log(x.toString()+y+"ee" );break;}
+            }if(x||y){break;}
         }
-
+        console.log(x , y)
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
-                if((possible_move([i,j,boardCurr[i][j]] ,[x,y,"ee"] ))[0] && boardCurr[i][j][1]!==(color)){
-                    // // check =true;
-                    // console.log("final ->",[x,y,"ee"]);
-                    // console.log([i,j,boardCurr[i][j]]);
-                    // console.log("check ->",i,j);
+                if((possible_move([i,j,board[i][j]] ,[x,y,"ee"] ,board))[0] && board[i][j][1]!==(color)){
                     return true;
                 }
             }
@@ -90,144 +82,190 @@ export default function Chessboard() {
         return false;
     }
 
+    function leadsToCheck(tempInital, tempFinal, color) {
+        let tempBoard = JSON.parse(JSON.stringify(boardCurr)); // Deep copy
 
-    function possible_move(inital,final){
+        tempBoard[tempFinal[0]][tempFinal[1]] = tempInital[2];
+        tempBoard[tempInital[0]][tempInital[1]] = ".";
+        
+        return check_or_not(color, tempBoard);
+    }
+
+    
+    function valid_moves(inital,final){
+        let poss=false
+        let final_poss=[]
+        let p_moves = possible_move(inital,final,boardCurr)[1]
+        let i = 0;
+            
+        while (i < p_moves.length) {
+            if (leadsToCheck(inital,ret_square(inital[2]+p_moves[i]) , inital[2][1])===false) {
+                final_poss.push(p_moves[i]);
+                console.log(leadsToCheck(inital,ret_square(inital[2]+p_moves[i]) , inital[2][1]))
+            }
+            i++;
+        }
+        if (final_poss.includes(final[0].toString() + final[1])) {
+            poss = true;
+        }
+        return [poss,final_poss];
+    }
+
+    function possible_move(inital,final,board){
         var poss=false;
         var p_moves=[];
         var x = inital[0];
         var y = inital[1];
         if(inital[2]==="pw"){
-            p_moves=pw_moves(x,y);
+            p_moves=pw_moves(x,y,board);
         }
         else if(inital[2]==="pb"){
-            p_moves=pb_moves(x,y);
+            p_moves=pb_moves(x,y,board);
         }
         else if(inital[2][0]==="n"){
-            p_moves=n_moves(x,y,inital);
+            p_moves=n_moves(x,y,inital,board);
         }
         else if(inital[2][0]==="r"){
-            p_moves=r_moves(x,y,inital);
+            p_moves=r_moves(x,y,inital,board);
         }
 
         else if(inital[2][0]==="b"){
-            p_moves=b_moves(x,y,inital);
+            p_moves=b_moves(x,y,inital,board);
         }
         else if(inital[2][0]==="q"){
-            var r=r_moves(x,y,inital);
-            var b=b_moves(x,y,inital);
+            var r=r_moves(x,y,inital,board);
+            var b=b_moves(x,y,inital,board);
             p_moves=r.concat(b);
         }
-        if(p_moves.includes(final[0].toString()+final[1])){
-            poss=true;
+
+        else if(inital[2][0]==="k"){
+            p_moves=k_moves(x,y,inital,board);
+        }
+
+        if (p_moves.includes(final[0].toString() + final[1])) {
+            poss = true;
         }
         return [poss,p_moves];
     }
 
-    function pw_moves(x,y){
+    function pw_moves(x,y,board){
         var p_moves=[];
-        if(boardCurr[x+1][y]==="."){
+        if(board[x+1][y]==="."){
             p_moves.push((x+1).toString()+y);
         }
-        if(boardCurr[x+2][y]==="." && x===1){
+        if(board[x+2][y]==="." && x===1){
             p_moves.push((x+2).toString()+y);
         }
-        if(boardCurr[x+1][y+1]!=="."){
+        if(board[x+1][y+1]!=="."){
             p_moves.push((x+1).toString()+(y+1));
         }
-        if(boardCurr[x+1][y-1]!=="."){
+        if(board[x+1][y-1]!=="."){
             p_moves.push((x+1).toString()+(y-1));
         }
         return p_moves;
     }
 
-    function pb_moves(x,y){
+    function pb_moves(x,y,board){
         var p_moves=[];
-        if(boardCurr[x-1][y]==="."){
+        if(board[x-1][y]==="."){
             p_moves.push((x-1).toString()+y);
         }
-        if(boardCurr[x-2][y]==="." && x===6){
+        if(board[x-2][y]==="." && x===6){
             p_moves.push((x-2).toString()+y);
         }
-        if(boardCurr[x-1][y+1]!=="."){
+        if(board[x-1][y+1]!=="."){
             p_moves.push((x-1).toString()+(y+1));
         }
-        if(boardCurr[x-1][y-1]!=="."){
+        if(board[x-1][y-1]!=="."){
             p_moves.push((x-1).toString()+(y-1));
         }
         return p_moves;
     }
 
-    function n_moves(x,y,inital){
+    function n_moves(x,y,inital,board){
         var p_moves=[];
         for(var i=-2;i<3;i++){
             for(var j=-2;j<3;j++){
                 if(i===j || i+j===0 || i===0 || j===0 || x+i>7 || x+i<0 || y+j>7 || y+j<0){continue;}
-                else if(boardCurr[x+i][y+j][1]!==inital[2][1] || boardCurr[x+i][y+j][1]==="."){p_moves.push((x+i).toString()+(y+j));}
+                else if(board[x+i][y+j][1]!==inital[2][1] || board[x+i][y+j][1]==="."){p_moves.push((x+i).toString()+(y+j));}
             }
         }
         return p_moves;
     }
-    function r_moves(x,y,inital){    
+    function r_moves(x,y,inital,board){    
         var p_moves=[];
         for(let i=x+1;i<8;i++){
-            if(boardCurr[i][y]==="."){p_moves.push((i).toString()+(y));}
+            if(board[i][y]==="."){p_moves.push((i).toString()+(y));}
             else{
-                if(boardCurr[i][y][1]!==inital[2][1]){p_moves.push((i).toString()+(y));}
+                if(board[i][y][1]!==inital[2][1]){p_moves.push((i).toString()+(y));}
                 break;
             }
         }
         for(let i=x-1;i>=0;i--){
-            if(boardCurr[i][y]==="."){p_moves.push((i).toString()+(y));}
+            if(board[i][y]==="."){p_moves.push((i).toString()+(y));}
             else{
-                if(boardCurr[i][y][1]!==inital[2][1]){p_moves.push((i).toString()+(y));}
+                if(board[i][y][1]!==inital[2][1]){p_moves.push((i).toString()+(y));}
                 break;
             }
         }
         for(let i=y+1;i<8;i++){
-            if(boardCurr[x][i]==="."){p_moves.push((x).toString()+(i));}
+            if(board[x][i]==="."){p_moves.push((x).toString()+(i));}
             else{
-                if(boardCurr[x][i][1]!==inital[2][1]){p_moves.push((x).toString()+(i));}
+                if(board[x][i][1]!==inital[2][1]){p_moves.push((x).toString()+(i));}
                 break;
             }
         }
         for(let i=y-1;i>=0;i--){
-            if(boardCurr[x][i]==="."){p_moves.push((x).toString()+(i));}
+            if(board[x][i]==="."){p_moves.push((x).toString()+(i));}
             else{
-                if(boardCurr[x][i][1]!==inital[2][1]){p_moves.push((x).toString()+(i));}
+                if(board[x][i][1]!==inital[2][1]){p_moves.push((x).toString()+(i));}
                 break;
             }
         }
         return p_moves;
     }
 
-    function b_moves(x,y,inital){
+    function b_moves(x,y,inital,board){
         var p_moves=[];
         for(let i=1;x+i<8 && y+i<8;i++){
-            if(boardCurr[x+i][y+i]==="."){p_moves.push((x+i).toString()+(y+i));}
+            if(board[x+i][y+i]==="."){p_moves.push((x+i).toString()+(y+i));}
             else{
-                if(boardCurr[x+i][y+i][1]!==inital[2][1]){p_moves.push((x+i).toString()+(y+i));}
+                if(board[x+i][y+i][1]!==inital[2][1]){p_moves.push((x+i).toString()+(y+i));}
                 break;
             }
         }
         for(let i=1;x-i>=0 && y+i<8;i++){
-            if(boardCurr[x-i][y+i]==="."){p_moves.push((x-i).toString()+(y+i));}
+            if(board[x-i][y+i]==="."){p_moves.push((x-i).toString()+(y+i));}
             else{
-                if(boardCurr[x-i][y+i][1]!==inital[2][1]){p_moves.push((x-i).toString()+(y+i));}
+                if(board[x-i][y+i][1]!==inital[2][1]){p_moves.push((x-i).toString()+(y+i));}
                 break;
             }
         }
         for(let i=1;x-i>=0 && y-i>=0;i++){
-            if(boardCurr[x-i][y-i]==="."){p_moves.push((x-i).toString()+(y-i));}
+            if(board[x-i][y-i]==="."){p_moves.push((x-i).toString()+(y-i));}
             else{
-                if(boardCurr[x-i][y-i][1]!==inital[2][1]){p_moves.push((x-i).toString()+(y-i));}
+                if(board[x-i][y-i][1]!==inital[2][1]){p_moves.push((x-i).toString()+(y-i));}
                 break;
             }
         }
         for(let i=1;x+i<8 && y-i>=0;i++){
-            if(boardCurr[x+i][y-i]==="."){p_moves.push((x+i).toString()+(y-i));}
+            if(board[x+i][y-i]==="."){p_moves.push((x+i).toString()+(y-i));}
             else{
-                if(boardCurr[x+i][y-i][1]!==inital[2][1]){p_moves.push((x+i).toString()+(y-i));}
+                if(board[x+i][y-i][1]!==inital[2][1]){p_moves.push((x+i).toString()+(y-i));}
                 break;
+            }
+        }
+        return p_moves;
+    }
+    function k_moves(x,y,inital,board){
+        let p_moves=[];
+        for(let i=-1;i<2;i++){
+            for(let j=-1;j<2;j++){
+                if(i===0 && j===0){continue;}
+                else if (x + i >= 0 && x + i < 8 &&  y + j >= 0 && y + j < 8 && (board[x + i][y + j][1] !== inital[2][1] || board[x + i][y + j][1] === ".")
+                ) {
+                    p_moves.push((x + i).toString() + (y + j));
+                }
             }
         }
         return p_moves;
