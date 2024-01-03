@@ -1,70 +1,48 @@
-# Getting Started with Create React App
+# Chess Website
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project is a simple chess website built using React. It includes a chessboard component that allows users to play chess by making moves with the pieces. The chess logic is implemented to validate legal moves and determine check conditions.
 
-## Available Scripts
+## Table of Contents
+- [Project Structure](#project-structure)
+- [Chessboard Component](#chessboard-component)
+- [Tile Component](#tile-component)
+- [Chess Logic](#chess-logic)
+- [How to Run](#how-to-run)
 
-In the project directory, you can run:
+## Project Structure
 
-### `npm start`
+The project consists of the following files and directories:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- `src/`
+  - `components/`
+    - `chessboard/` - Contains the Chessboard component.
+    - `tile/` - Contains the Tile component.
+  - `App.js` - Main component rendering Chessboard.
+  - `chessboard.css` - Stylesheet for the Chessboard component.
+  - `App.css` - Stylesheet for the App component.
+  - `Tile.css` - Stylesheet for the Tile component.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Chessboard Component
 
-### `npm test`
+The Chessboard component (`Chessboard.js`) is the main component responsible for rendering the chessboard, handling user interactions, and managing the game state. It uses the Tile component to render each square on the board.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Tile Component
 
-### `npm run build`
+The Tile component (`Tile.js`) is a simple component used to render each square on the chessboard. It displays a piece image if a piece is present on the square, and it handles the visual representation of empty squares.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Chess Logic
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The chess logic is implemented in the Chessboard component. It includes functions for updating the board based on user moves, checking for legal moves, and determining check conditions. The logic for different types of pieces (pawn, knight, rook, bishop, queen, and king) is implemented in separate functions.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## How to Run
 
-### `npm run eject`
+To run the chess website locally, follow these steps:
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+1. Clone the repository: `git clone [https://github.com/your-username/chess-website](https://github.com/jatingaur18/Chess).git`
+2. Navigate to the project directory: `cd chess-website`
+3. Install dependencies: `npm install`
+4. Run the application: `npm start`
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+The chess website should open in your default web browser. You can start playing chess by making moves on the chessboard.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Feel free to customize and extend the project as needed. Enjoy playing chess on the website!
