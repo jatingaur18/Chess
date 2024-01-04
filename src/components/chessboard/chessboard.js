@@ -17,6 +17,7 @@ const initialBoard = [
 ];
 var turn = true;
 var activepiece = null;
+var moves = [];
 // var check =false;
 export default function Chessboard() {
     const [boardCurr, setBoardCurr] = useState(initialBoard);
@@ -49,15 +50,26 @@ export default function Chessboard() {
             var final  =ret_square(clickedElement.classList.value);
             var pp =valid_moves(inital,final,boardCurr);
             if(pp[0] && ((turn && inital[2][1]==="w")||(!turn && inital[2][1]==="b"))){
+                moves.push(inital[0].toString() + inital[1].toString() + inital[2][0] + final[0].toString() + final[1].toString());
+                console.log(inital[0].toString() + inital[1].toString() + inital[2][0] + final[0].toString() + final[1].toString())
                 update_board(inital, final).then(() => {
                     activepiece = null;
                   });
-                  
+                  check_en_passent(inital,final).then(()=>{});
                   
                   
                   return;
             }
             activepiece=clickedElement;
+        }
+    }
+    async function check_en_passent(inital,final){
+        if(inital[2][0]==="p" && Math.abs(inital[0]-final[0])===1 && Math.abs(inital[1]-final[1])===1 ){    setBoardCurr(prevBoard => {
+                const newBoard = [...prevBoard];
+                newBoard[inital[0]][final[1]] = ".";
+                if((turn && check_mate("w",newBoard)) || (!turn && check_mate("b",newBoard))){console.log(inital[2][1] + "wins")}
+                return newBoard;
+            });
         }
     }
 
@@ -176,6 +188,13 @@ export default function Chessboard() {
         if(board[x+1][y-1]!=="."){
             p_moves.push((x+1).toString()+(y-1));
         }
+        // console.log(moves.length)
+        if(moves.length >0 ){   
+            let last =moves[moves.length-1];
+            if( last[2]==="p" && Math.abs(parseInt(last[0])-parseInt(last[3]))===2 && Math.abs(parseInt(last[4])-y)===1){
+                p_moves.push((x+1).toString()+last[4]);
+            }
+        }
         return p_moves;
     }
 
@@ -192,6 +211,12 @@ export default function Chessboard() {
         }
         if(board[x-1][y-1]!=="."){
             p_moves.push((x-1).toString()+(y-1));
+        }
+        if(moves.length >0 ){   
+            let last =moves[moves.length-1];
+            if( last[2]==="p" && Math.abs(parseInt(last[0])-parseInt(last[3]))===2 && Math.abs(parseInt(last[4])-y)===1){
+                p_moves.push((x-1).toString()+last[4]);
+            }
         }
         return p_moves;
     }

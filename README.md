@@ -38,7 +38,7 @@ The chess logic is implemented in the Chessboard component. It includes function
 
 To run the chess website locally, follow these steps:
 
-1. Clone the repository: `git clone [https://github.com/your-username/chess-website](https://github.com/jatingaur18/Chess).git`
+1. Clone the repository: `git clone https://github.com/jatingaur18/Chess.git`
 2. Navigate to the project directory: `cd chess-website`
 3. Install dependencies: `npm install`
 4. Run the application: `npm start`
