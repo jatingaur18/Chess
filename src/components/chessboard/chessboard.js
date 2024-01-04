@@ -34,32 +34,48 @@ export default function Chessboard() {
             const newBoard = [...prevBoard];
             newBoard[final[0]][final[1]] = inital[2];
             newBoard[inital[0]][inital[1]] = ".";
+            if((turn && check_mate("w",newBoard)) || (!turn && check_mate("b",newBoard))){console.log(inital[2][1] + "wins")}
             return newBoard;
     });
     }
 
     function grabPiece(e) {
         const clickedElement = e.target;
-        console.log(clickedElement);
         if (activepiece===null && clickedElement.tagName === 'IMG') {
             activepiece = clickedElement;
         } 
         else if(activepiece!==null){
             var inital =ret_square(activepiece.classList.value);
             var final  =ret_square(clickedElement.classList.value);
-            var pp =valid_moves(inital,final);
+            var pp =valid_moves(inital,final,boardCurr);
             if(pp[0] && ((turn && inital[2][1]==="w")||(!turn && inital[2][1]==="b"))){
                 update_board(inital, final).then(() => {
                     activepiece = null;
                   });
+                  
+                  
+                  
                   return;
             }
             activepiece=clickedElement;
         }
     }
 
+    function check_mate( color, board){
+        board =boardCurr
+        console.log(board[3][6])
+        for(let i=0;i<8;i++){
+            for(let j=0;j<8;j++){
+                if(board[i][j][1]===(color) && (valid_moves([i,j,board[i][j]] ,[i,j,board[i][j]] ,board))[1].length!==0){
+                    console.log(i , j)
+                    return false;
+                }
+            }
+        }
+        return true
+    }
+
     function check_or_not(color,board){
-        console.log(board[2][2])
         var x=null;
         var y=null;
         for(let i=0;i<8;i++){
@@ -71,7 +87,6 @@ export default function Chessboard() {
                 }
             }if(x||y){break;}
         }
-        console.log(x , y)
         for(let i=0;i<8;i++){
             for(let j=0;j<8;j++){
                 if((possible_move([i,j,board[i][j]] ,[x,y,"ee"] ,board))[0] && board[i][j][1]!==(color)){
@@ -92,16 +107,15 @@ export default function Chessboard() {
     }
 
     
-    function valid_moves(inital,final){
+    function valid_moves(inital,final,board){
         let poss=false
         let final_poss=[]
-        let p_moves = possible_move(inital,final,boardCurr)[1]
+        let p_moves = possible_move(inital,final,board)[1]
         let i = 0;
             
         while (i < p_moves.length) {
             if (leadsToCheck(inital,ret_square(inital[2]+p_moves[i]) , inital[2][1])===false) {
                 final_poss.push(p_moves[i]);
-                console.log(leadsToCheck(inital,ret_square(inital[2]+p_moves[i]) , inital[2][1]))
             }
             i++;
         }
